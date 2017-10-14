@@ -6,41 +6,46 @@ import requests
 import sys
 import subprocess
 
-page = requests.get(sys.argv[1])
-tree = html.fromstring(page.content)
+def main(arg1, arg2):
 
-print(sys.argv[1])
+	page = requests.get(arg1)
+	tree = html.fromstring(page.content)
 
-headline = tree.xpath('//header[@class="content-header "]//text()')
-textContent = tree.xpath('//div[@class="content-text"]//text()')
+#	print(arg1)
 
-# clean up content
-ht = [a.strip() for a in headline]
-tct = [a.strip() for a in textContent]
+	headline = tree.xpath('//header[@class="content-header "]//text()')
+	textContent = tree.xpath('//div[@class="content-text"]//text()')
 
-for x in ht:
-    if x == "":
-        ht.remove(x)
+	# clean up content
+	ht = [a.strip() for a in headline]
+	tct = [a.strip() for a in textContent]
 
-for x in tct:
-    if x == "":
-        tct.remove(x)
+	for x in ht:
+	    if x == "":
+	        ht.remove(x)
 
-print(ht)
-print(tct)
+	for x in tct:
+	    if x == "":
+	        tct.remove(x)
 
-# Write to file
-fmode = "a"
-category = sys.argv[2]
+#	print(ht)
+#	print(tct)
 
-out = subprocess.run(["mkdir", sys.argv[2]])
+	# Write to file
+	fmode = "a"
+	category = arg2
 
-hf = open(category + "/headers.txt", fmode)
-for item in ht:
-    hf.write("%s\n" % item)
-hf.close()
+	out = subprocess.run(["mkdir", category], stderr = subprocess.DEVNULL)
 
-cf = open(category + "/content.txt", fmode)
-for item in tct:
-    cf.write("%s\n" % item)
-cf.close()
+	hf = open(category + "/headers.txt", fmode)
+	for item in ht:
+	    hf.write("%s\n" % item)
+	hf.close()
+
+	cf = open(category + "/content.txt", fmode)
+	for item in tct:
+	    cf.write("%s\n" % item)
+	cf.close()
+
+if __name__ == "__main__":
+	main(sys.argv[1], sys.argv[2])
